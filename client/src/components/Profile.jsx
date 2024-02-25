@@ -1,65 +1,341 @@
 import React, { useState } from "react";
-import { FaCamera } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Profile({ user, handleSignOut }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Button,
+  Avatar,
+  Box,
+  Text,
+  Input,
+  IconButton,
+  useToast,
+} from "@chakra-ui/react";
+import { FiLogOut, FiTrash2, FiCamera } from "react-icons/fi";
 
-  const handleDeleteAccount = () => {
-    console.log("Delete account logic goes here");
+import { appFirebase } from "../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  signOut,
+} from "../redux/slices/userSlice";
+
+const Profile = () => {
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const avatarDisclosure = useDisclosure();
+  const logoutConfirmationDisclosure = useDisclosure();
+  const deleteConfirmationDisclosure = useDisclosure();
+
+  const toast = useToast();
+
+  const [image, setImage] = useState(undefined);
+  const [imagePercent, setImagePercent] = useState(0);
+  const [imageError, setImageError] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const handleEditImage = async (e) => {
+    setImage(e.target.files[0]);
+    const storage = getStorage(appFirebase);
+    const fileName = new Date().getTime() + image.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setImagePercent(Math.round(progress));
+      },
+      (error) => {
+        setImageError(true);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
+          setFormData({ ...formData, pic: downloadURL })
+        );
+      }
+    );
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        `/api/user/update/${currentUser._id}`,
+        formData,
+        { ...config, withCredentials: true }
+      );
+
+      if (data.success === false) {
+        dispatch(updateUserFailure(data));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      await axios.get("/api/auth/signout", { config, withCredentials: true });
+      dispatch(signOut());
+      logoutConfirmationDisclosure.onClose();
+      avatarDisclosure.onClose();
+      toast({
+        title: "Logout Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      dispatch(deleteUserStart());
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.delete(
+        `/api/user/delete/${currentUser._id}`,
+        { config, withCredentials: true }
+      );
+
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      toast({
+        title: "Account Deleted Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      deleteConfirmationDisclosure.onClose();
+      avatarDisclosure.onClose();
+      navigate("/");
+    } catch (error) {
+      dispatch(deleteUserFailure(error));
+    }
+  };
+
+  const openProfileModal = () => {
+    if (!currentUser) {
+      toast({
+        title: "Please login or signup to view your profile.",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      avatarDisclosure.onOpen();
+    }
   };
 
   return (
     <>
-      {/* Profile Picture Outside - Circular with Border */}
-      <div
-        className="relative inline-block"
-        onClick={() => setIsModalOpen(true)}
+      <Avatar
+        size="md"
+        name={currentUser?.name || "Guest"}
+        src={currentUser?.profilePic || ""}
+        _hover={{
+          border: "2px solid",
+          borderColor: "rgba(255, 75, 43, 0.6)",
+        }}
+        tabIndex={0}
+        onClick={openProfileModal}
+        cursor="pointer"
+      />
+      <Modal
+        isOpen={avatarDisclosure.isOpen}
+        onClose={avatarDisclosure.onClose}
+        isCentered
       >
-        <img
-          src={user.profilePic}
-          alt="Profile"
-          className="h-10 w-10 rounded-full border-2 border-gray-300 object-cover cursor-pointer"
-        />
-      </div>
-
-      {isModalOpen && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-10">
-          <div className="bg-white p-4 rounded-lg">
-            {/* Profile Picture Inside the Modal - Circular with Camera Icon */}
-            <div className="relative inline-block">
-              <img
-                src={user.profilePic}
-                alt="Profile"
-                className="h-24 w-24 rounded-full border-4 border-gray-300 object-cover"
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign="center">{currentUser?.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody textAlign="center">
+            <Box position="relative" display="inline-block">
+              <Avatar
+                size="2xl"
+                name={currentUser?.name}
+                src={currentUser?.profilePic}
+                _hover={{
+                  border: "2px solid",
+                  borderColor: "rgba(255, 75, 43, 0.6)",
+                }}
               />
-              <FaCamera className="h-6 w-6 absolute bottom-0 right-0 text-blue-400 cursor-pointer" />
-              {/* Assuming clicking the camera icon here would open an edit photo modal */}
-            </div>
-            <p className="text-lg font-semibold mt-2">{user.name}</p>
-            <p>{user.email}</p>
-            <button
-              className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-              onClick={handleSignOut}
+              <IconButton
+                aria-label="Edit image"
+                icon={<FiCamera />}
+                size="sm"
+                position="absolute"
+                bottom="0"
+                right="0"
+                borderRadius="full"
+                _hover={{
+                  border: "2px solid",
+                  borderColor: "rgba(255, 75, 43, 0.6)",
+                }}
+                onClick={() => document.getElementById("imageInput").click()}
+              />
+              <Input
+                id="imageInput"
+                type="file"
+                accept=".jpeg,.png"
+                hidden
+                onChange={handleEditImage}
+              />
+            </Box>
+            <Text fontSize="lg" mt="4">
+              {currentUser?.email}
+            </Text>
+          </ModalBody>
+          <ModalFooter justifyContent="space-between">
+            <Button
+              leftIcon={<FiLogOut />}
+              colorScheme="red"
+              onClick={logoutConfirmationDisclosure.onOpen}
             >
-              Sign Out
-            </button>
-            <button
-              className="mt-4 py-2 px-4 bg-red-500 text-white rounded hover:bg-red-700 transition ml-2"
-              onClick={handleDeleteAccount}
+              Logout
+            </Button>
+            <Button
+              leftIcon={<FiTrash2 />}
+              colorScheme="red"
+              variant="ghost"
+              onClick={deleteConfirmationDisclosure.onOpen}
+              _hover={{
+                border: "2px solid",
+                borderColor: "rgba(255, 75, 43, 0.6)",
+              }}
             >
               Delete Account
-            </button>
-            <button
-              className="mt-4 py-2 px-4 bg-gray-300 text-black rounded hover:bg-gray-400 transition ml-2"
-              onClick={() => setIsModalOpen(false)}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        isOpen={logoutConfirmationDisclosure.isOpen}
+        onClose={logoutConfirmationDisclosure.onClose}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Logout Confirmation</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>Are you sure you want to logout?</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={handleLogout}>
+              Yes
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={logoutConfirmationDisclosure.onClose}
+              _hover={{
+                border: "2px solid",
+                borderColor: "rgba(255, 75, 43, 0.6)",
+              }}
             >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+              No
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Delete Account Confirmation Modal */}
+      <Modal
+        isOpen={deleteConfirmationDisclosure.isOpen}
+        onClose={deleteConfirmationDisclosure.onClose}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete Account Confirmation</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Are you sure you want to delete your account? This action cannot
+              be undone.
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={handleDeleteAccount}>
+              Yes
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={deleteConfirmationDisclosure.onClose}
+              _hover={{
+                border: "2px solid",
+                borderColor: "rgba(255, 75, 43, 0.6)",
+              }}
+            >
+              No
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
-}
+};
 
 export default Profile;

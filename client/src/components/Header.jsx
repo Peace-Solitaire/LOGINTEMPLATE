@@ -1,35 +1,96 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-// import Profile from "./Profile";
+import React from "react";
+import {
+  useColorModeValue,
+  Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  IconButton,
+  Spacer,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from "@chakra-ui/react";
+import { SearchIcon, BellIcon, HamburgerIcon } from "@chakra-ui/icons";
+import Profile from "./Profile";
 
-function Header() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+/* useColorModeValue from chakra ui is used to create diff color for diff setting eg darkmode and lightmode */
 
-  // Dummy user info - replace with actual data
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    profilePic: "/path/to/profile/pic.jpg", // Placeholder path
-  };
+const Header = () => {
+  const bgColor = useColorModeValue("white", "gray.700");
+  const color = useColorModeValue("black", "white");
 
-  const handleSignOut = () => {
-    // Handle sign out
-  };
+  const openAvatar = async () =>{
 
-  const handleDeleteAccount = () => {
-    setIsModalOpen(true); // Open confirmation modal
-  };
+  }
 
   return (
-    <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
-      <div className="flex space-x-4">
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-        <Link to="/profile">Profile</Link>
-      </div>
-      {/* <Profile user={user} handleSignOut={handleSignOut} /> */}
-    </div>
+    <Flex
+      paddingX="4"
+      paddingY="1"
+      background={bgColor}
+      color={color}
+      alignItems="center"
+      boxShadow="sm"
+    >
+      <Menu>
+        <MenuButton
+          as={IconButton}
+          variant="outline"
+          aria-label="Options"
+          icon={<HamburgerIcon />}
+          margin="3"
+          _hover={{
+            border: "2px solid",
+            borderColor: "rgba(255, 75, 43, 0.6)",
+          }}
+        />
+        <MenuList>
+          <MenuItem>Profile</MenuItem>
+          <MenuItem>Home</MenuItem>
+          <MenuItem>About</MenuItem>
+          <MenuItem>Settings</MenuItem>
+          <MenuItem>Logout</MenuItem>
+        </MenuList>
+      </Menu>
+
+      <InputGroup width="md">
+        <InputLeftElement pointerEvents="none">
+          <SearchIcon color="gray.500" />
+        </InputLeftElement>
+        <Input
+          placeholder="Search..."
+          _hover={{
+            border: "2px solid",
+            borderColor: "rgba(255, 75, 43, 0.6)",
+          }}
+          _focus={{
+            boxShadow: "none",
+            border: "2px solid",
+            borderColor: "rgba(255, 75, 43, 0.6)",
+          }}
+        />
+      </InputGroup>
+
+      <Spacer />
+
+      <IconButton
+        variant="outline"
+        aria-label="Notifications"
+        icon={<BellIcon />}
+        margin="4"
+        _hover={{
+          border: "2px solid",
+          borderColor: "rgba(255, 75, 43, 0.6)",
+        }}
+      />
+      <Profile />
+    
+    </Flex>
   );
-}
+};
 
 export default Header;
+

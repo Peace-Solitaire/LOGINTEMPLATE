@@ -1,9 +1,12 @@
-import React from 'react';
-import LoginPage from './LoginPage';
+import React from "react";
+import LoginPage from "./LoginPage";
+import styles from "../styles/LoginPage.module.css";
 
 function HomePage() {
   return (
-    <div><LoginPage /></div>
+    <div className={styles.bodyHomePage}>
+      <LoginPage />
+    </div>
   );
 }
 

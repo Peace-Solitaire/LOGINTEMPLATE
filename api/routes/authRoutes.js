@@ -1,8 +1,10 @@
 const express = require("express");
-const { registerUser, authUser } = require("../controllers/authController.js");
+const { registerUser, authUser,googleAuthUser, signoutUser } = require("../controllers/authController.js");
 const router = express.Router();
 
-router.post("/",registerUser);
-router.post("/login",authUser);
+router.post("/signup",registerUser);
+router.post("/signin",authUser);
+router.post("/google/login",googleAuthUser);
+router.get("/signout", signoutUser);
 
 module.exports = router;

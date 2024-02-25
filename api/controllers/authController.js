@@ -3,7 +3,10 @@ const User = require("../models/userModel.js");
 const generateToken = require("../config/generateToken.js");
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const formData = req.body;
+  const name = formData.signupName;
+  const email = formData.signupEmail;
+  const password = formData.signupPassword;
 
   if (!name || !email || !password) {
     res.status(400);
@@ -24,12 +27,15 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (newUser) {
-    res.status(201).json({
+    const currToken = generateToken(newUser._id);
+    res.status(201).cookie("access_token", currToken, { httpOnly: true }).json({
       _id: newUser._id,
       name: newUser.name,
       email: newUser.email,
-      token: generateToken(newUser._id),
+      pic: newUser.pic,
+      token: currToken,
     });
+    
   } else {
     res.status(400);
     throw new Error("Failed to create user");
@@ -37,14 +43,22 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const authUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (user && (await user.matchPassword(password))) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
+  const formData = req.body;
+  const email = formData.signinEmail;
+  const password = formData.signinPassword;
+
+  const currUser = await User.findOne({ email });
+  if (currUser && (await currUser.matchPassword(password))) {
+    const currToken = generateToken(currUser._id);
+    res
+    .status(200)
+    .cookie("access_token",currToken,{httpOnly: true})
+    .json({
+      _id: currUser._id,
+      name: currUser.name,
+      email: currUser.email,
+      pic: currUser.pic,
+      token: currToken,
     });
   } else {
     res.status(401);
@@ -52,4 +66,39 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser };
+const googleAuthUser = asyncHandler(
+  async (req,res) => {
+    try {
+      let currUser = await User.findOne({ email: req.body.email });
+      
+      if (!currUser) {
+        currUser = await User.create({
+          name: req.body.displayName,
+          email: req.body.email,
+          pic: req.body.photoUrl,
+        });
+      }
+      const currToken = generateToken(currUser._id);
+      res
+        .status(200)
+        .cookie("access_token", currToken, { httpOnly: true })
+        .json({
+          _id: currUser._id,
+          name: currUser.name,
+          email: currUser.email,
+          token: currToken,
+        });
+
+      
+    } catch (error) {
+      res.status(401);
+      throw new Error("Unable to Login with Google");
+    }
+  }
+);
+
+const signoutUser = asyncHandler (async(req, res) => {
+  res.clearCookie("access_token").status(200).json("Signout success!");
+});
+
+module.exports = { registerUser, authUser, googleAuthUser, signoutUser };
