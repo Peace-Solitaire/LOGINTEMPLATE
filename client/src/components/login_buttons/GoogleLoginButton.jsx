@@ -46,7 +46,7 @@ const GoogleLoginButton = () => {
        });
 
        dispatch(signInSuccess(data));
-       navigate("/profile");
+       navigate("/about");
     } catch (error) {
       console.log("could not login with google",error);
     }

@@ -75,7 +75,7 @@ const Login = () => {
       }
       dispatch(signInSuccess(data));
 
-      navigate("/profile");
+      navigate("/about");
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -146,7 +146,7 @@ const Login = () => {
         return;
       }
       dispatch(signInSuccess(data));
-      navigate("/profile");
+      navigate("/about");
     } catch (error) {
       toast({
         title: "Error Occured!",

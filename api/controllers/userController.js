@@ -12,7 +12,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
       req.params.id,
       {
         $set: {
-          name: req.body.username,
+          name: req.body.name,
           email: req.body.email,
           password: req.body.password,
           pic: req.body.pic,
@@ -37,4 +37,16 @@ const deleteUser = asyncHandler(async (req, res, next) => {
     next(error);
   }
 });
-module.exports = { updateUser,deleteUser };
+const getNotifications = asyncHandler(async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "You can delete only your account!"));
+  }
+  try {
+    // getNotification according to your database structure
+    // retur array of notification
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = { updateUser,deleteUser, getNotifications };

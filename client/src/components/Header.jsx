@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   useColorModeValue,
   Flex,
@@ -14,17 +15,18 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 import { SearchIcon, BellIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { FiHome, FiInfo, FiSettings } from "react-icons/fi";
 import Profile from "./Profile";
-
-/* useColorModeValue from chakra ui is used to create diff color for diff setting eg darkmode and lightmode */
+import NotificationButton from "./NotificationButton";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const bgColor = useColorModeValue("white", "gray.700");
   const color = useColorModeValue("black", "white");
+  const navigate = useNavigate();
 
-  const openAvatar = async () =>{
+ 
 
-  }
 
   return (
     <Flex
@@ -48,11 +50,21 @@ const Header = () => {
           }}
         />
         <MenuList>
-          <MenuItem>Profile</MenuItem>
-          <MenuItem>Home</MenuItem>
-          <MenuItem>About</MenuItem>
-          <MenuItem>Settings</MenuItem>
-          <MenuItem>Logout</MenuItem>
+          <MenuItem
+            icon={<FiHome style={{ fontSize: "18px" }} />}
+            onClick={() => navigate("/")}
+          >
+            Home
+          </MenuItem>
+          <MenuItem
+            icon={<FiInfo style={{ fontSize: "18px" }} />}
+            onClick={() => navigate("/about")}
+          >
+            About
+          </MenuItem>
+          <MenuItem icon={<FiSettings style={{ fontSize: "18px" }} />}>
+            Settings
+          </MenuItem>
         </MenuList>
       </Menu>
 
@@ -76,21 +88,10 @@ const Header = () => {
 
       <Spacer />
 
-      <IconButton
-        variant="outline"
-        aria-label="Notifications"
-        icon={<BellIcon />}
-        margin="4"
-        _hover={{
-          border: "2px solid",
-          borderColor: "rgba(255, 75, 43, 0.6)",
-        }}
-      />
+      <NotificationButton />
       <Profile />
-    
     </Flex>
   );
 };
 
 export default Header;
-

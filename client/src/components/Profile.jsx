@@ -3,23 +3,22 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   useDisclosure,
-  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Avatar,
-  Box,
-  Text,
-  Input,
-  IconButton,
   useToast,
+  Circle,
 } from "@chakra-ui/react";
-import { FiLogOut, FiTrash2, FiCamera } from "react-icons/fi";
+import {
+  FiLogOut,
+  FiTrash2,
+  FiUser,
+  FiMail,
+  FiEdit,
+} from "react-icons/fi";
 
 import { appFirebase } from "../firebase";
 import {
@@ -41,12 +40,13 @@ import {
   deleteUserFailure,
   signOut,
 } from "../redux/slices/userSlice";
+import { DeletePopUpModal, EditPopUpModal, LogoutPopUpModal } from "./PopUpModal";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const avatarDisclosure = useDisclosure();
+  const editProfileDisclosure = useDisclosure();
   const logoutConfirmationDisclosure = useDisclosure();
   const deleteConfirmationDisclosure = useDisclosure();
 
@@ -57,6 +57,10 @@ const Profile = () => {
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const onEditProfile = () => {
+    setIsEditProfileOpen(true);
+  };
 
   const handleEditImage = async (e) => {
     setImage(e.target.files[0]);
@@ -106,6 +110,7 @@ const Profile = () => {
         dispatch(updateUserFailure(data));
         return;
       }
+      editProfileDisclosure.onClose();
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
     } catch (error) {
@@ -123,7 +128,6 @@ const Profile = () => {
       await axios.get("/api/auth/signout", { config, withCredentials: true });
       dispatch(signOut());
       logoutConfirmationDisclosure.onClose();
-      avatarDisclosure.onClose();
       toast({
         title: "Logout Successful",
         status: "success",
@@ -165,175 +169,81 @@ const Profile = () => {
         position: "bottom",
       });
       deleteConfirmationDisclosure.onClose();
-      avatarDisclosure.onClose();
       navigate("/");
     } catch (error) {
       dispatch(deleteUserFailure(error));
     }
   };
 
-  const openProfileModal = () => {
-    if (!currentUser) {
-      toast({
-        title: "Please login or signup to view your profile.",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    } else {
-      avatarDisclosure.onOpen();
-    }
-  };
-
   return (
     <>
-      <Avatar
-        size="md"
-        name={currentUser?.name || "Guest"}
-        src={currentUser?.profilePic || ""}
-        _hover={{
-          border: "2px solid",
-          borderColor: "rgba(255, 75, 43, 0.6)",
-        }}
-        tabIndex={0}
-        onClick={openProfileModal}
-        cursor="pointer"
+      <Menu>
+        <MenuButton
+          as={Circle}
+          cursor="pointer"
+          display="inline-flex"
+          _hover={{
+            border: "2px solid",
+            borderColor: "rgba(255, 75, 43, 0.6)",
+          }}
+        >
+          <Avatar
+            size="md"
+            name={currentUser?.name || "Guest"}
+            src={
+              currentUser?.pic || 
+              "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg" 
+            }
+          />
+        </MenuButton>
+
+        <MenuList>
+          <MenuItem icon={<FiUser style={{ fontSize: "18px" }} />}>
+            {currentUser?.name || "Guest Name"}
+          </MenuItem>
+          <MenuItem icon={<FiMail style={{ fontSize: "18px" }} />}>
+            {currentUser?.email || "guest@example.com"}
+          </MenuItem>
+          {currentUser && (
+            <>
+              <MenuItem
+                icon={<FiEdit style={{ fontSize: "18px" }} />}
+                onClick={editProfileDisclosure.onOpen}
+              >
+                Edit Profile
+              </MenuItem>
+
+              <MenuItem
+                icon={<FiLogOut style={{ fontSize: "18px" }} />}
+                onClick={logoutConfirmationDisclosure.onOpen}
+              >
+                Logout
+              </MenuItem>
+              <MenuItem
+                icon={<FiTrash2 style={{ fontSize: "18px" }} />}
+                onClick={deleteConfirmationDisclosure.onOpen}
+              >
+                Delete Account
+              </MenuItem>
+            </>
+          )}
+        </MenuList>
+      </Menu>
+      
+      <LogoutPopUpModal
+        logoutConfirmationDisclosure={logoutConfirmationDisclosure}
+        handleLogout={handleLogout}
       />
-      <Modal
-        isOpen={avatarDisclosure.isOpen}
-        onClose={avatarDisclosure.onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader textAlign="center">{currentUser?.name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody textAlign="center">
-            <Box position="relative" display="inline-block">
-              <Avatar
-                size="2xl"
-                name={currentUser?.name}
-                src={currentUser?.profilePic}
-                _hover={{
-                  border: "2px solid",
-                  borderColor: "rgba(255, 75, 43, 0.6)",
-                }}
-              />
-              <IconButton
-                aria-label="Edit image"
-                icon={<FiCamera />}
-                size="sm"
-                position="absolute"
-                bottom="0"
-                right="0"
-                borderRadius="full"
-                _hover={{
-                  border: "2px solid",
-                  borderColor: "rgba(255, 75, 43, 0.6)",
-                }}
-                onClick={() => document.getElementById("imageInput").click()}
-              />
-              <Input
-                id="imageInput"
-                type="file"
-                accept=".jpeg,.png"
-                hidden
-                onChange={handleEditImage}
-              />
-            </Box>
-            <Text fontSize="lg" mt="4">
-              {currentUser?.email}
-            </Text>
-          </ModalBody>
-          <ModalFooter justifyContent="space-between">
-            <Button
-              leftIcon={<FiLogOut />}
-              colorScheme="red"
-              onClick={logoutConfirmationDisclosure.onOpen}
-            >
-              Logout
-            </Button>
-            <Button
-              leftIcon={<FiTrash2 />}
-              colorScheme="red"
-              variant="ghost"
-              onClick={deleteConfirmationDisclosure.onOpen}
-              _hover={{
-                border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
-              }}
-            >
-              Delete Account
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Logout Confirmation Modal */}
-      <Modal
-        isOpen={logoutConfirmationDisclosure.isOpen}
-        onClose={logoutConfirmationDisclosure.onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Logout Confirmation</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>Are you sure you want to logout?</Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={handleLogout}>
-              Yes
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={logoutConfirmationDisclosure.onClose}
-              _hover={{
-                border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
-              }}
-            >
-              No
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Delete Account Confirmation Modal */}
-      <Modal
-        isOpen={deleteConfirmationDisclosure.isOpen}
-        onClose={deleteConfirmationDisclosure.onClose}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Delete Account Confirmation</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>
-              Are you sure you want to delete your account? This action cannot
-              be undone.
-            </Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={handleDeleteAccount}>
-              Yes
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={deleteConfirmationDisclosure.onClose}
-              _hover={{
-                border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
-              }}
-            >
-              No
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <EditPopUpModal
+        editProfileDisclosure={editProfileDisclosure}
+        handleChange={handleChange}
+        handleEditImage={handleEditImage}
+        handleSubmit={handleSubmit}
+      />
+      <DeletePopUpModal
+        deleteConfirmationDisclosure={deleteConfirmationDisclosure}
+        handleDeleteAccount={handleDeleteAccount}
+      />
     </>
   );
 };
