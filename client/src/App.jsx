@@ -11,7 +11,15 @@ function App() {
       className="App"
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
-      <Header />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1000,
+          width: "100%",
+        }}
+      >
+        <Header />
+      </div>
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<HomePage />} />

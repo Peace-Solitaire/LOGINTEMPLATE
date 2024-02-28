@@ -18,7 +18,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 
-export const LogoutPopUpModal = (
+export const LogoutPopUpModal =  (
   {logoutConfirmationDisclosure,
   handleLogout}
 ) => {
@@ -56,7 +56,7 @@ export const LogoutPopUpModal = (
     </>
   );
 };
-export const DeletePopUpModal = (
+export const DeletePopUpModal =  (
   {deleteConfirmationDisclosure,
   handleDeleteAccount}
 ) => {
@@ -97,7 +97,7 @@ export const DeletePopUpModal = (
     </>
   );
 };
-export const EditPopUpModal = (
+export const EditPopUpModal =  (
   {editProfileDisclosure,
   handleChange,
   handleEditImage,

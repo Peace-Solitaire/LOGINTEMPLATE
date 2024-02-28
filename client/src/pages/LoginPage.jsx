@@ -78,7 +78,7 @@ const Login = () => {
       navigate("/about");
     } catch (error) {
       toast({
-        title: "Error Occured!",
+        title: "Invalid Email or Password!",
         description: error.response.data.message,
         status: "error",
         duration: 5000,
@@ -87,6 +87,12 @@ const Login = () => {
       });
       dispatch(signInFailure(error));
     }
+  };
+
+  const validateEmail = (email) => {
+    const validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return validRegex.test(email);
   };
 
   const submitHandlerSignup = async (e) => {
@@ -109,7 +115,17 @@ const Login = () => {
       });
       return;
     }
-
+    if (!validateEmail(signupEmail)) {
+      toast({
+        title: "Invalid email address!",
+        description: "Please enter a valid email address.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
     if (signupPassword !== signupConfirmPassword) {
       toast({
         title: "Passwords Do Not Match",

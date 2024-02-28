@@ -12,13 +12,7 @@ import {
   useToast,
   Circle,
 } from "@chakra-ui/react";
-import {
-  FiLogOut,
-  FiTrash2,
-  FiUser,
-  FiMail,
-  FiEdit,
-} from "react-icons/fi";
+import { FiLogOut, FiTrash2, FiUser, FiMail, FiEdit } from "react-icons/fi";
 
 import { appFirebase } from "../firebase";
 import {
@@ -40,7 +34,11 @@ import {
   deleteUserFailure,
   signOut,
 } from "../redux/slices/userSlice";
-import { DeletePopUpModal, EditPopUpModal, LogoutPopUpModal } from "./PopUpModal";
+import {
+  DeletePopUpModal,
+  EditPopUpModal,
+  LogoutPopUpModal,
+} from "./PopUpModal";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -52,18 +50,24 @@ const Profile = () => {
 
   const toast = useToast();
 
-  const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  const onEditProfile = () => {
-    setIsEditProfileOpen(true);
-  };
-
   const handleEditImage = async (e) => {
-    setImage(e.target.files[0]);
+    const image = e.target.files[0];
+    if (!image) {
+      toast({
+        title: "No file selected",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
     const storage = getStorage(appFirebase);
     const fileName = new Date().getTime() + image.name;
     const storageRef = ref(storage, fileName);
@@ -79,9 +83,9 @@ const Profile = () => {
         setImageError(true);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-          setFormData({ ...formData, pic: downloadURL })
-        );
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFormData({ ...formData, pic: downloadURL });
+        });
       }
     );
   };
@@ -105,7 +109,7 @@ const Profile = () => {
         formData,
         { ...config, withCredentials: true }
       );
-
+      console.log(data);
       if (data.success === false) {
         dispatch(updateUserFailure(data));
         return;
@@ -191,8 +195,8 @@ const Profile = () => {
             size="md"
             name={currentUser?.name || "Guest"}
             src={
-              currentUser?.pic || 
-              "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg" 
+              currentUser?.pic ||
+              "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
             }
           />
         </MenuButton>
@@ -229,7 +233,7 @@ const Profile = () => {
           )}
         </MenuList>
       </Menu>
-      
+
       <LogoutPopUpModal
         logoutConfirmationDisclosure={logoutConfirmationDisclosure}
         handleLogout={handleLogout}
