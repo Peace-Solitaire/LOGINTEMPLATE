@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const dotenv = require("dotenv");
 
+const __dirname10 = path.resolve();
 dotenv.config();
 
 const connectDB = require("./config/db.js");
@@ -13,10 +14,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, "client/dist")));
+app.use(express.static(path.join(__dirname10, "client/dist")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+  res.sendFile(path.join(__dirname10, "client", "dist", "index.html"));
 });
 
 const userRoutes = require("./routes/userRoutes.js");
