@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import * as Components from "../styles/components.jsx";
-import { Flex, useToast } from "@chakra-ui/react";
+import "../styles/LoginPageStyles.css";
+
+import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -15,12 +16,14 @@ import {
   signInSuccess,
 } from "../redux/slices/userSlice.js";
 
-const Login = () => {
-  const [formData, setFormData] = useState({});
-  // const {loading, error} = useSelector((state) => state.user);
+import logImage from "../assets/authentication.svg";
+import registerImage from "../assets/register.svg";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+
+const LoginPage = () => {
+  const [formData, setFormData] = useState({});
+  const { currentUser, loading, error } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,7 +78,7 @@ const Login = () => {
       }
       dispatch(signInSuccess(data));
 
-      navigate("/about");
+      navigate("/");
     } catch (error) {
       toast({
         title: "Invalid Email or Password!",
@@ -155,14 +158,13 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
-      setLoading(false);
+
       if (data.success === false) {
         dispatch(signInFailure(data));
-        setError(true);
         return;
       }
       dispatch(signInSuccess(data));
-      navigate("/about");
+      navigate("/");
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -172,99 +174,149 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
-      setLoading(false);
-      setError(true);
     }
   };
+
   return (
-    <Components.Container>
-      <Components.SignUpContainer signinflag={signIn}>
-        <Components.Form>
-          <Components.Title>Create Account</Components.Title>
-          <Components.Input
-            name="signupName"
-            type="text"
-            placeholder="Name"
-            onChange={handleChange}
-          />
-          <Components.Input
-            name="signupEmail"
-            type="email"
-            placeholder="Email"
-            onChange={handleChange}
-          />
-          <Components.Input
-            name="signupPassword"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-          />
-          <Components.Input
-            name="signupConfirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            onChange={handleChange}
-          />
-          <Components.SignUpButton onClick={submitHandlerSignup}>
-            Sign Up
-          </Components.SignUpButton>
-        </Components.Form>
-      </Components.SignUpContainer>
+    <div className={`container ${signIn ? "sign-up-mode" : ""}`}>
+      <div className="forms-container">
+        <div className="signin-signup">
+          <form action="#" className="sign-in-form">
+            <h2 className="title">Login to your account</h2>
+            <div className="input-field">
+              <i className="fas fa-user">
+                <FaUser />
+              </i>
+              <input
+                name="signinEmail"
+                type="text"
+                placeholder="Email"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="input-field">
+              <i className="fas fa-lock">
+                <FaLock />
+              </i>
+              <input
+                name="signinPassword"
+                type="password"
+                placeholder="Password"
+                onChange={handleChange}
+              />
+            </div>
+            <input
+              type="submit"
+              value="Login"
+              className="btn solid"
+              onClick={submitHandlerLogin}
+            />
 
-      <Components.SignInContainer signinflag={signIn}>
-        <Components.Form>
-          <Components.Title>Login to your account</Components.Title>
-          <Components.Input
-            name="signinEmail"
-            type="email"
-            placeholder="Email"
-            onChange={handleChange}
-          />
-          <Components.Input
-            name="signinPassword"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-          />
-          <Components.Anchor href="#">Forgot your password?</Components.Anchor>
+            <p className="social-text">Or Sign in with</p>
+            <div className="social-media">
+              <GoogleLoginButton />
+              <FaceBookLoginButton />
+              <GitHubLoginButton />
+            </div>
+          </form>
 
-          <Components.SignInButton onClick={submitHandlerLogin}>
-            Sign In
-          </Components.SignInButton>
+          <form action="#" className="sign-up-form">
+            <h2 className="title">Create Account</h2>
+            <div className="input-field">
+              <i className="icon">
+                <FaUser />
+              </i>
+              <input
+                name="signupName"
+                type="text"
+                placeholder="Name"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="input-field">
+              <i className="icon">
+                <FaEnvelope className="icon" />
+              </i>
+              <input
+                name="signupEmail"
+                type="email"
+                placeholder="Email"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="input-field">
+              <i className="icon">
+                <FaLock />
+              </i>
+              <input
+                name="signupPassword"
+                type="password"
+                placeholder="Password"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="input-field">
+              <i className="icon">
+                <FaLock />
+              </i>
+              <input
+                name="signupConfirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                onChange={handleChange}
+              />
+            </div>
+            <input
+              type="submit"
+              className="btn solid"
+              value="Sign up"
+              onClick={submitHandlerSignup}
+            />
+            <p className="social-text">Or Sign up with</p>
+            <div className="social-media">
+              <GoogleLoginButton />
+              <FaceBookLoginButton />
+              <GitHubLoginButton />
+            </div>
+          </form>
+        </div>
+      </div>
 
-          <Flex justify="space-between" mt="6" gap="6">
-            <GoogleLoginButton />
-            <FaceBookLoginButton />
-            <GitHubLoginButton />
-          </Flex>
-        </Components.Form>
-      </Components.SignInContainer>
+      <div className="panels-container">
+        <div className="panel left-panel">
+          <div className="content">
+            <h3>Hello, Friend!</h3>
+            <p>Enter Your personal details and start your journey with us</p>
+            <button
+              className="btn transparent"
+              id="sign-up-btn"
+              onClick={() => toggle(true)}
+            >
+              Sign up
+            </button>
+          </div>
+          <img src={logImage} className="image" alt="" />
+        </div>
 
-      <Components.OverlayContainer signinflag={signIn}>
-        <Components.Overlay signinflag={signIn}>
-          <Components.LeftOverlayPanel signinflag={signIn}>
-            <Components.Title>Welcome Back!</Components.Title>
-            <Components.Paragraph>
+        <div className="panel right-panel">
+          <div className="content">
+            <h3>Welcome Back!</h3>
+            <p>
               To keep connected with us please login with your personal info
-            </Components.Paragraph>
-            <Components.GhostButton onClick={() => toggle(true)}>
-              Sign In
-            </Components.GhostButton>
-          </Components.LeftOverlayPanel>
-
-          <Components.RightOverlayPanel signinflag={signIn}>
-            <Components.Title>Hello, Friend!</Components.Title>
-            <Components.Paragraph>
-              Enter Your personal details and start your journey with us
-            </Components.Paragraph>
-            <Components.GhostButton onClick={() => toggle(false)}>
-              Sign Up
-            </Components.GhostButton>
-          </Components.RightOverlayPanel>
-        </Components.Overlay>
-      </Components.OverlayContainer>
-    </Components.Container>
+            </p>
+            <button
+              className="btn transparent"
+              id="sign-in-btn"
+              onClick={() => toggle(false)}
+            >
+              Sign in
+            </button>
+          </div>
+          <img src={registerImage} className="image" alt="" />
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Login;
+export default LoginPage;

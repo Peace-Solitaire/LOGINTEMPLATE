@@ -14,7 +14,7 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import { SearchIcon, BellIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { SearchIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { FiHome, FiInfo, FiSettings } from "react-icons/fi";
 import Profile from "./Profile";
 import NotificationButton from "./NotificationButton";
@@ -24,9 +24,6 @@ const Header = () => {
   const bgColor = useColorModeValue("white", "gray.700");
   const color = useColorModeValue("black", "white");
   const navigate = useNavigate();
-
- 
-
 
   return (
     <Flex
@@ -46,7 +43,7 @@ const Header = () => {
           margin="3"
           _hover={{
             border: "2px solid",
-            borderColor: "rgba(255, 75, 43, 0.6)",
+            borderColor: "#4481eb",
           }}
         />
         <MenuList>
@@ -76,12 +73,12 @@ const Header = () => {
           placeholder="Search..."
           _hover={{
             border: "2px solid",
-            borderColor: "rgba(255, 75, 43, 0.6)",
+            borderColor: "#4481eb",
           }}
           _focus={{
             boxShadow: "none",
             border: "2px solid",
-            borderColor: "rgba(255, 75, 43, 0.6)",
+            borderColor: "#4481eb",
           }}
         />
       </InputGroup>

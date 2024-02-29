@@ -188,7 +188,7 @@ const Profile = () => {
           display="inline-flex"
           _hover={{
             border: "2px solid",
-            borderColor: "rgba(255, 75, 43, 0.6)",
+            borderColor: "#4481eb",
           }}
         >
           <Avatar

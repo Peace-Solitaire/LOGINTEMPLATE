@@ -20,14 +20,14 @@ const NotificationsButton = () => {
         const response = await axios.get(
           "/path/to/your/notifications/endpoint"
         );
-        setNotifications(response.data); 
+        setNotifications(response.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     };
 
     fetchNotifications();
-  }, []); 
+  }, []);
 
   return (
     <Box margin="4">
@@ -38,7 +38,7 @@ const NotificationsButton = () => {
           variant="outline"
           _hover={{
             border: "2px solid",
-            borderColor: "rgba(255, 75, 43, 0.6)",
+            borderColor: "#4481eb",
           }}
           aria-label="Notifications"
         />

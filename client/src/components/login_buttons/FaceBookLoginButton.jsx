@@ -1,40 +1,49 @@
 import React from "react";
 import { FaFacebookF } from "react-icons/fa";
-import { Button } from "../../styles/LoginButton";
+import { Button } from "../../styles/LoginButtonComponents";
 import styled from "styled-components";
+import { useToast } from "@chakra-ui/react";
 
-import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
-import { appFirebase } from "../../firebase";
-
-const FacebookButton = styled(Button)` 
-  background-color: #4267B2; 
+const FacebookButton = styled(Button)`
+  background-color: #4267b2;
   &:hover {
-    background-color: #365899; 
+    background-color: #365899;
   }
   .icon {
-    color: #fff; 
+    color: #fff;
+    left: 10.5px;
   }
   .text {
-    color: #fff; 
+    color: #fff;
   }
 `;
 
 const FaceBookLoginButton = () => {
-    const handleClick = async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        const auth = getAuth(appFirebase);
-        const result = await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.log("could not login with google", error);
-      }
-    };
- return (<FacebookButton onClick={handleClick}>
-    <div className="icon">
-      <FaFacebookF size="24px" />
-    </div>
-    <span className="text">Login with Facebook</span>
-  </FacebookButton>);
-}; 
+  const toast = useToast();
+  const handleClick = async (e) => {
+    e.preventDefault();
+    try {
+      toast({
+        title: "Comming Soon...!",
+        description: "Login with FaceBook is unavailable at the moment.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    } catch (error) {
+      console.log("could not login with google", error);
+    }
+  };
+  return (
+    <FacebookButton onClick={handleClick}>
+      <div className="icon">
+        <FaFacebookF size="24px" />
+      </div>
+      <span className="text">Login with Facebook</span>
+    </FacebookButton>
+  );
+};
 
 export default FaceBookLoginButton;

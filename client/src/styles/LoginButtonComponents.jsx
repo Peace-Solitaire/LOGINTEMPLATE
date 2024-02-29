@@ -5,45 +5,46 @@ const fadeIn = keyframes`
 `;
 
 const expandButton = keyframes`
-  from { width: 40px; } /* Reduced from 50px to 40px */
-  to { width: 200px; }
+  from { width: 46px; } 
+  to { width: 230px; }
 `;
 
 export const Button = styled.button`
   background-color: #f2f2f2;
+  margin: 1rem;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px; /* Reduced padding for a smaller circle */
   border-radius: 50%;
   overflow: hidden;
   position: relative;
-  width: 40px; /* Reduced width for a smaller initial circle */
-  height: 40px; /* Reduced height to match the width for a perfect circle */
+  width: 46px;
+  height: 46px;
   transition: border-radius 0.3s ease, background-color 0.3s ease;
 
   &:hover {
     border-radius: 30px; // Smooth transition to rounded corners
-    animation: ${expandButton} 0.5s forwards ease; // Animate width expansion
+    animation: ${expandButton} 0.5s forwards ease;
     .text {
       display: inline;
-      animation: ${fadeIn} 0.5s forwards ease; // Fade-in animation for the text
-      animation-delay: 0.25s; // Start text animation after button begins to expand
+      animation: ${fadeIn} 0.5s forwards ease;
+      animation-delay: 0.25s;
     }
   }
 
   .icon {
     position: absolute;
-    left: 8px; 
+    left: 11px;
   }
 
   .text {
     white-space: nowrap;
     font-weight: bold;
     color: #000;
-    margin-left: 30px; // Adjusted to match reduced size
-    opacity: 0; // Initially hidden
+    padding-left: 1rem;
+    opacity: 0;
+    font-size: 1.1rem;
   }
 `;

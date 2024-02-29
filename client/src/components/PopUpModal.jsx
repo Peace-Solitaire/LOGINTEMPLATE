@@ -13,15 +13,12 @@ import {
   Text,
   Input,
 } from "@chakra-ui/react";
-import {
-  FiCamera,
-  FiUser,
-} from "react-icons/fi";
+import { FiCamera, FiUser } from "react-icons/fi";
 
-export const LogoutPopUpModal =  (
-  {logoutConfirmationDisclosure,
-  handleLogout}
-) => {
+export const LogoutPopUpModal = ({
+  logoutConfirmationDisclosure,
+  handleLogout,
+}) => {
   return (
     <>
       <Modal
@@ -45,7 +42,7 @@ export const LogoutPopUpModal =  (
               onClick={logoutConfirmationDisclosure.onClose}
               _hover={{
                 border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
+                borderColor: "#4481eb",
               }}
             >
               No
@@ -56,10 +53,10 @@ export const LogoutPopUpModal =  (
     </>
   );
 };
-export const DeletePopUpModal =  (
-  {deleteConfirmationDisclosure,
-  handleDeleteAccount}
-) => {
+export const DeletePopUpModal = ({
+  deleteConfirmationDisclosure,
+  handleDeleteAccount,
+}) => {
   return (
     <>
       <Modal
@@ -86,7 +83,7 @@ export const DeletePopUpModal =  (
               onClick={deleteConfirmationDisclosure.onClose}
               _hover={{
                 border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
+                borderColor: "#4481eb",
               }}
             >
               No
@@ -97,12 +94,12 @@ export const DeletePopUpModal =  (
     </>
   );
 };
-export const EditPopUpModal =  (
-  {editProfileDisclosure,
+export const EditPopUpModal = ({
+  editProfileDisclosure,
   handleChange,
   handleEditImage,
-  handleSubmit}
-) => {
+  handleSubmit,
+}) => {
   return (
     <>
       <Modal
@@ -123,7 +120,7 @@ export const EditPopUpModal =  (
                 id="name"
                 type="text"
                 placeholder="Edit Name"
-                onChange={handleChange} 
+                onChange={handleChange}
               />
             </InputGroup>
 
@@ -147,18 +144,14 @@ export const EditPopUpModal =  (
             </InputGroup>
           </ModalBody>
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={handleSubmit}
-            >
+            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
               Submit
             </Button>
             <Button
               onClick={editProfileDisclosure.onClose}
               _hover={{
                 border: "2px solid",
-                borderColor: "rgba(255, 75, 43, 0.6)",
+                borderColor: "#4481eb",
               }}
             >
               Cancel

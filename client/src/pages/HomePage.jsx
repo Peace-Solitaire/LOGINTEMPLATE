@@ -8,13 +8,10 @@ function HomePage() {
   const currentUser = useSelector((state) => state.user.currentUser);
 
   return (
-    <Container centerContent py={{ base: "4", md: "8" }} maxW="container.md">
+    <Container centerContent py={{ base: "4", md: "8" }} maxW="container">
       {currentUser ? (
         <VStack spacing={4} align="center">
-          <WaveText
-            text="Welcome-to-Our-Platform!"
-            size="3em"
-          />
+          <WaveText text="Welcome-to-Our-Platform!" size="3em" />
           <Text fontSize="lg">
             🎉 We're glad to see you here. Explore what's new today.
           </Text>

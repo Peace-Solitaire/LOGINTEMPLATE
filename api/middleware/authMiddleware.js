@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const {errorHandler} = require("./errorMiddleware");
+const { errorHandler } = require("./errorMiddleware");
 const asyncHandler = require("express-async-handler");
 
 const protect = asyncHandler(async (req, res, next) => {

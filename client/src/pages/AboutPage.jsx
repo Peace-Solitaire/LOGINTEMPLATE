@@ -1,13 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  Link,
-} from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, Link } from "@chakra-ui/react";
 
 function AboutPage() {
   return (

@@ -35,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
       pic: newUser.pic,
       token: currToken,
     });
-    
   } else {
     res.status(400);
     throw new Error("Failed to create user");
@@ -50,10 +49,7 @@ const authUser = asyncHandler(async (req, res) => {
   const currUser = await User.findOne({ email });
   if (currUser && (await currUser.matchPassword(password))) {
     const currToken = generateToken(currUser._id);
-    res
-    .status(200)
-    .cookie("access_token",currToken,{httpOnly: true})
-    .json({
+    res.status(200).cookie("access_token", currToken, { httpOnly: true }).json({
       _id: currUser._id,
       name: currUser.name,
       email: currUser.email,
@@ -66,38 +62,31 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-const googleAuthUser = asyncHandler(
-  async (req,res) => {
-    try {
-      let currUser = await User.findOne({ email: req.body.email });
-      
-      if (!currUser) {
-        currUser = await User.create({
-          name: req.body.displayName,
-          email: req.body.email,
-          pic: req.body.photoUrl,
-        });
-      }
-      const currToken = generateToken(currUser._id);
-      res
-        .status(200)
-        .cookie("access_token", currToken, { httpOnly: true })
-        .json({
-          _id: currUser._id,
-          name: currUser.name,
-          email: currUser.email,
-          token: currToken,
-        });
+const googleAuthUser = asyncHandler(async (req, res) => {
+  try {
+    let currUser = await User.findOne({ email: req.body.email });
 
-      
-    } catch (error) {
-      res.status(401);
-      throw new Error("Unable to Login with Google");
+    if (!currUser) {
+      currUser = await User.create({
+        name: req.body.displayName,
+        email: req.body.email,
+        pic: req.body.photoUrl,
+      });
     }
+    const currToken = generateToken(currUser._id);
+    res.status(200).cookie("access_token", currToken, { httpOnly: true }).json({
+      _id: currUser._id,
+      name: currUser.name,
+      email: currUser.email,
+      token: currToken,
+    });
+  } catch (error) {
+    res.status(401);
+    throw new Error("Unable to Login with Google");
   }
-);
+});
 
-const signoutUser = asyncHandler (async(req, res) => {
+const signoutUser = asyncHandler(async (req, res) => {
   res.clearCookie("access_token").status(200).json("Signout success!");
 });
 

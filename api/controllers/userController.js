@@ -1,13 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel.js");
-const {errorHandler} = require("../middleware/errorMiddleware.js");
+const { errorHandler } = require("../middleware/errorMiddleware.js");
 
 const updateUser = asyncHandler(async (req, res, next) => {
   if (req.user.id !== req.params.id) {
     return next(errorHandler(401, "You can update only your account!"));
   }
   try {
-   
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -49,4 +48,4 @@ const getNotifications = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { updateUser,deleteUser, getNotifications };
+module.exports = { updateUser, deleteUser, getNotifications };
