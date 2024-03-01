@@ -121,7 +121,6 @@ form.sign-in-form {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 0.45rem;
   color: #333;
   border-radius: 50%;
   border: 1px solid #333;
@@ -365,7 +364,7 @@ form.sign-in-form {
 
   .container.sign-up-mode:before {
     transform: translate(-50%, 100%);
-    bottom: 32%;
+    bottom: 26.5%;
     right: initial;
   }
 
@@ -411,7 +410,7 @@ form.sign-in-form {
   }
 
   .container.sign-up-mode:before {
-    bottom: 28%;
+    bottom: 25%;
     left: 50%;
   }
 }
